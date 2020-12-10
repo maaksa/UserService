@@ -24,7 +24,7 @@ public class CreditCard {
 
     private int securityCode;
 
-    @ManyToMany()
+    @ManyToOne()
     private User user;
 
     public CreditCard(String cardName, long cardNumber, int securityCode, User user) {

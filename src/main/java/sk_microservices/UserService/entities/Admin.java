@@ -10,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-//todo admin praviti tabelu u bazi?
 @Getter
 @Setter
 @ToString
@@ -18,6 +17,7 @@ import javax.persistence.Id;
 @Entity
 public class Admin {
 
+    //todo admin praviti tabelu u bazi?
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
