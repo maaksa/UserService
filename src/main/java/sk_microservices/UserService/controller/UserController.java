@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import sk_microservices.UserService.entities.CreditCard;
@@ -18,11 +17,6 @@ import sk_microservices.UserService.entities.User;
 import sk_microservices.UserService.forms.RegistrationForm;
 import sk_microservices.UserService.repository.UserRepository;
 import sk_microservices.UserService.utils.UtilsMethods;
-
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Properties;
 
 import static sk_microservices.UserService.security.SecurityConstants.*;
 
@@ -128,6 +122,19 @@ public class UserController {
             System.out.println("usaooooooo");
             ResponseEntity<String> response = UtilsMethods.sendPost("http://localhost:8081/flight/add", addFlightForm);
             System.out.println(response);
+
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getAllFlights")
+    public ResponseEntity<Object> getAllFlights() {
+
+        try {
+            ResponseEntity<Object> response = UtilsMethods.sendGet("http://localhost:8081/flight/getAll");
 
             return response;
         } catch (Exception e) {
