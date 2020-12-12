@@ -1,8 +1,12 @@
 package sk_microservices.UserService.forms;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class RegistrationForm {
@@ -12,5 +16,7 @@ public class RegistrationForm {
     private String email;
     private String password;
     private long brojPasosa;
+
+
 
 }
