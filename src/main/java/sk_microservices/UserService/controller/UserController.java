@@ -8,13 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import sk_microservices.UserService.entities.CreditCard;
-import sk_microservices.UserService.forms.AddCreditCardForm;
-import sk_microservices.UserService.forms.AddFlightForm;
-import sk_microservices.UserService.forms.UserProfilEditForm;
+import sk_microservices.UserService.forms.*;
 import sk_microservices.UserService.repository.CreditCardRepository;
 import sk_microservices.UserService.service.NotificationService;
 import sk_microservices.UserService.entities.User;
-import sk_microservices.UserService.forms.RegistrationForm;
 import sk_microservices.UserService.repository.UserRepository;
 import sk_microservices.UserService.utils.UtilsMethods;
 
@@ -109,21 +106,6 @@ public class UserController {
             creditCardRepository.save(creditCard);
 
             return new ResponseEntity<>("successfully added", HttpStatus.ACCEPTED);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/addFlight")
-    public ResponseEntity<String> addFlight(@RequestBody AddFlightForm addFlightForm) {
-
-        try {
-            System.out.println("usaooooooo");
-            ResponseEntity<String> response = UtilsMethods.sendPost("http://localhost:8081/flight/add", addFlightForm);
-            System.out.println(response);
-
-            return response;
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

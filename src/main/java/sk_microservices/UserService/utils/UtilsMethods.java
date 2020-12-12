@@ -27,7 +27,6 @@ public class UtilsMethods {
 
         HttpEntity<Object> entity = new HttpEntity<Object>(body, headers);
 
-        System.out.println("ide gas");
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
         return response;
