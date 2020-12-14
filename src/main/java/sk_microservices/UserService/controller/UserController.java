@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sk_microservices.UserService.entities.CreditCard;
 import sk_microservices.UserService.forms.*;
@@ -17,7 +18,7 @@ import sk_microservices.UserService.utils.UtilsMethods;
 
 import static sk_microservices.UserService.security.SecurityConstants.*;
 
-@RestController
+@Controller
 @RequestMapping("")
 public class UserController {
 
@@ -113,10 +114,10 @@ public class UserController {
     }
 
     @GetMapping("/getAllFlights")
-    public ResponseEntity<Object> getAllFlights() {
+    public ResponseEntity<String> getAllFlights() {
 
         try {
-            ResponseEntity<Object> response = UtilsMethods.sendGet("http://localhost:8081/flight/getAll");
+            ResponseEntity<String> response = UtilsMethods.sendGet("http://localhost:8081/flight/list");
 
             return response;
         } catch (Exception e) {

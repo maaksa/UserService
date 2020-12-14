@@ -1,10 +1,10 @@
-package sk_microservices.UserService.forms;
+package sk_microservices.UserService.forms.flightService;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import sk_microservices.UserService.entities.Airplane;
+import sk_microservices.UserService.entities.flightService.Airplane;
 
 @AllArgsConstructor
 @NoArgsConstructor

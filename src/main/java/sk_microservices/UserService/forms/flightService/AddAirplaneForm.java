@@ -1,4 +1,4 @@
-package sk_microservices.UserService.forms;
+package sk_microservices.UserService.forms.flightService;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

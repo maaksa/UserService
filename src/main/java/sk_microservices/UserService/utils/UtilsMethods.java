@@ -8,14 +8,14 @@ import org.springframework.web.client.RestTemplate;
 
 public class UtilsMethods {
 
-    public static ResponseEntity<Object> sendGet(String url) {
+    public static ResponseEntity<String> sendGet(String url) {
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
 
         HttpEntity<String> entity = new HttpEntity<String>(null, headers);
 
-        ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.GET, entity, Object.class);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
         return response;
     }

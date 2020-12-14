@@ -1,4 +1,4 @@
-package sk_microservices.UserService.entities;
+package sk_microservices.UserService.entities.flightService;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
