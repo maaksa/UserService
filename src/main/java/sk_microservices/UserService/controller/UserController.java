@@ -18,7 +18,7 @@ import sk_microservices.UserService.utils.UtilsMethods;
 
 import static sk_microservices.UserService.security.SecurityConstants.*;
 
-@Controller
+@RestController
 @RequestMapping("")
 public class UserController {
 
@@ -76,6 +76,7 @@ public class UserController {
 
             if (!newEmail.isEmpty() && !newEmail.equals(user.getEmail())) {
                 user.setEmail(newEmail);
+
                 User userToSend = userRepo.save(user);
                 notificationService.sendMail(userToSend.getEmail());
             } else {
@@ -93,6 +94,8 @@ public class UserController {
     public ResponseEntity<String> addCreditCard(@RequestHeader(value = HEADER_STRING) String token, @RequestBody AddCreditCardForm addCreditCardForm) {
 
         try {
+
+
             String email = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
                     .verify(token.replace(TOKEN_PREFIX, "")).getSubject();
 
@@ -114,10 +117,10 @@ public class UserController {
     }
 
     @GetMapping("/getAllFlights")
-    public ResponseEntity<String> getAllFlights() {
+    public ResponseEntity<Object> getAllFlights() {
 
         try {
-            ResponseEntity<String> response = UtilsMethods.sendGet("http://localhost:8081/flight/list");
+            ResponseEntity<Object> response = UtilsMethods.sendGet("http://localhost:8081/flight/list");
 
             return response;
         } catch (Exception e) {
@@ -125,5 +128,19 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    //za GUI //todo
+//    @GetMapping("/getAllFlights")
+//    public ResponseEntity<String> getAllFlights() {
+//
+//        try {
+//            ResponseEntity<String> response = UtilsMethods.sendGet("http://localhost:8081/flight/list");
+//
+//            return response;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
 }

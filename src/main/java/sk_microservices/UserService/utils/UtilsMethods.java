@@ -8,14 +8,14 @@ import org.springframework.web.client.RestTemplate;
 
 public class UtilsMethods {
 
-    public static ResponseEntity<String> sendGet(String url) {
+    public static ResponseEntity<Object> sendGet(String url) {
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
 
         HttpEntity<String> entity = new HttpEntity<String>(null, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.GET, entity, Object.class);
 
         return response;
     }
@@ -28,6 +28,18 @@ public class UtilsMethods {
         HttpEntity<Object> entity = new HttpEntity<Object>(body, headers);
 
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+        return response;
+    }
+
+    public static ResponseEntity<String> sendDelete(String url) {
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+
+        HttpEntity<Object> entity = new HttpEntity<Object>(null, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 
         return response;
     }
