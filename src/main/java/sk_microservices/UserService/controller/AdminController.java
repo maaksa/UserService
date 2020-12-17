@@ -58,10 +58,23 @@ public class AdminController {
 
 
     @GetMapping("/getAllAirplanes")
-    public ResponseEntity<Object> getAllFlights() {
+    public ResponseEntity<Object> getAllAirplanes() {
 
         try {
             ResponseEntity<Object> response = UtilsMethods.sendGet("http://localhost:8081/airplane/list");
+
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getAllFlights")
+    public ResponseEntity<Object> getAllFlights() {
+
+        try {
+            ResponseEntity<Object> response = UtilsMethods.sendGet("http://localhost:8081/airplane/allFlights");
 
             return response;
         } catch (Exception e) {
@@ -77,7 +90,7 @@ public class AdminController {
             ResponseEntity<String> response = UtilsMethods.sendDelete("http://localhost:8081/airplane/delete/" + id);
 
             return response;
-        } catch (Exception e)  {
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

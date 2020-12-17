@@ -77,6 +77,9 @@ public class UserController {
             if (!newEmail.isEmpty() && !newEmail.equals(user.getEmail())) {
                 user.setEmail(newEmail);
 
+                //send email
+                //notificationService.sendMail(userToSend.getEmail());
+
                 User userToSend = userRepo.save(user);
                 notificationService.sendMail(userToSend.getEmail());
             } else {
