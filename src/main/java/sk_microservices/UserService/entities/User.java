@@ -30,11 +30,13 @@ public class User {
 
     private long brojPasosa;
 
+    private int brojMilja;
+
     @OneToMany(mappedBy = "user")
     private List<CreditCard> creditCards;
 
     //@Enumerated(EnumType.STRING)
-    private Rank rank;
+    //private Rank rank;
 
     public User(String ime, String prezime, String email, String password, long brojPasosa) {
         this.ime = ime;
@@ -42,6 +44,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.brojPasosa = brojPasosa;
+        this.brojMilja =50;
     }
 
 }

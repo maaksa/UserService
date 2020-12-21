@@ -14,6 +14,7 @@ import sk_microservices.UserService.repository.CreditCardRepository;
 import sk_microservices.UserService.service.NotificationService;
 import sk_microservices.UserService.entities.User;
 import sk_microservices.UserService.repository.UserRepository;
+import sk_microservices.UserService.service.UserService;
 import sk_microservices.UserService.utils.UtilsMethods;
 
 import static sk_microservices.UserService.security.SecurityConstants.*;
@@ -23,16 +24,12 @@ import static sk_microservices.UserService.security.SecurityConstants.*;
 public class UserController {
 
     private BCryptPasswordEncoder encoder;
-    private UserRepository userRepo;
-    private CreditCardRepository creditCardRepository;
-    private NotificationService notificationService;
+    private UserService userService;
 
     @Autowired
-    public UserController(BCryptPasswordEncoder encoder, UserRepository userRepo, NotificationService notificationService, CreditCardRepository creditCardRepository) {
+    public UserController(BCryptPasswordEncoder encoder, UserService userService) {
         this.encoder = encoder;
-        this.userRepo = userRepo;
-        this.notificationService = notificationService;
-        this.creditCardRepository = creditCardRepository;
+        this.userService = userService;
     }
 
     @PostMapping("/register")
@@ -41,8 +38,7 @@ public class UserController {
         try {
             User user = new User(registrationForm.getIme(), registrationForm.getPrezime(), registrationForm.getEmail(),
                     encoder.encode(registrationForm.getPassword()), registrationForm.getBrojPasosa());
-
-            User userToSend = userRepo.saveAndFlush(user);
+            User userToSend = userService.saveAndFlush(user);
 
             //send email
             //notificationService.sendMail(userToSend.getEmail());
@@ -58,34 +54,7 @@ public class UserController {
     public ResponseEntity<String> editProfil(@RequestHeader(value = HEADER_STRING) String token, @RequestBody UserProfilEditForm userProfilEditForm) {
 
         try {
-            String email = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
-                    .verify(token.replace(TOKEN_PREFIX, "")).getSubject();
-
-            String newIme = userProfilEditForm.getIme();
-            String newPrezime = userProfilEditForm.getPrezime();
-            String newEmail = userProfilEditForm.getEmail();
-            String newPassword = userProfilEditForm.getPassword();
-            long newBrojPasosa = userProfilEditForm.getBrojPasosa();
-
-            User user = userRepo.findByEmail(email);
-
-            user.setIme(newIme);
-            user.setPrezime(newPrezime);
-            user.setBrojPasosa(newBrojPasosa);
-            user.setPassword(newPassword);
-
-            if (!newEmail.isEmpty() && !newEmail.equals(user.getEmail())) {
-                user.setEmail(newEmail);
-
-                //send email
-                //notificationService.sendMail(userToSend.getEmail());
-
-                User userToSend = userRepo.save(user);
-                notificationService.sendMail(userToSend.getEmail());
-            } else {
-                userRepo.save(user);
-            }
-
+            userService.editUser(token, userProfilEditForm);
             return new ResponseEntity<>("successfully edited", HttpStatus.ACCEPTED);
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,23 +64,8 @@ public class UserController {
 
     @PostMapping("/addCreditCard")
     public ResponseEntity<String> addCreditCard(@RequestHeader(value = HEADER_STRING) String token, @RequestBody AddCreditCardForm addCreditCardForm) {
-
         try {
-
-
-            String email = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
-                    .verify(token.replace(TOKEN_PREFIX, "")).getSubject();
-
-            String cardName = addCreditCardForm.getCardName();
-            long cardNumber = addCreditCardForm.getCardNumber();
-            int securityCode = addCreditCardForm.getSecurityCode();
-
-            User user = userRepo.findByEmail(email);
-
-            CreditCard creditCard = new CreditCard(cardName, cardNumber, securityCode, user);
-
-            creditCardRepository.save(creditCard);
-
+            userService.saveCreditCard(token, addCreditCardForm);
             return new ResponseEntity<>("successfully added", HttpStatus.ACCEPTED);
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,10 +75,8 @@ public class UserController {
 
     @GetMapping("/getAllFlights")
     public ResponseEntity<Object> getAllFlights() {
-
         try {
             ResponseEntity<Object> response = UtilsMethods.sendGet("http://localhost:8081/flight/list");
-
             return response;
         } catch (Exception e) {
             e.printStackTrace();
