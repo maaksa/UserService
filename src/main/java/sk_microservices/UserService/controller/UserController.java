@@ -73,11 +73,11 @@ public class UserController {
         }
     }
 
-    @GetMapping("/getAllFlights")
-    public ResponseEntity<Object> getAllFlights() {
+    @GetMapping("/checkUser")
+    public ResponseEntity<Object> getAllFlights(@RequestHeader(value = HEADER_STRING) String token) {
         try {
-            ResponseEntity<Object> response = UtilsMethods.sendGet("http://localhost:8081/flight/list");
-            return response;
+            Boolean toReturn = userService.check(token);
+            return new ResponseEntity<>(toReturn, HttpStatus.ACCEPTED);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

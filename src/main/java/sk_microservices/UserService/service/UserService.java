@@ -30,7 +30,20 @@ public class UserService {
     @Autowired
     private NotificationService notificationService;
 
-    public CreditCard saveCreditCard(String token, AddCreditCardForm addCreditCardForm){
+    public Boolean check(String token) {
+        String email = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
+                .verify(token.replace(TOKEN_PREFIX, "")).getSubject();
+
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            return null;
+        }
+
+        return true;
+    }
+
+    public CreditCard saveCreditCard(String token, AddCreditCardForm addCreditCardForm) {
         String email = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
                 .verify(token.replace(TOKEN_PREFIX, "")).getSubject();
 
@@ -45,7 +58,7 @@ public class UserService {
         return creditCardRepository.save(creditCard);
     }
 
-    public User editUser(String token, UserProfilEditForm userProfilEditForm){
+    public User editUser(String token, UserProfilEditForm userProfilEditForm) {
 
         String email = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
                 .verify(token.replace(TOKEN_PREFIX, "")).getSubject();
@@ -77,26 +90,26 @@ public class UserService {
         return user;
     }
 
-    public User saveAndFlush(User user){
+    public User saveAndFlush(User user) {
         return userRepository.saveAndFlush(user);
     }
 
-    public User findById(long id){
+    public User findById(long id) {
         return userRepository.findById(id);
     }
 
-    public List<User> findAllByIds(List<Long> ids){
+    public List<User> findAllByIds(List<Long> ids) {
         List<User> toReturn = new ArrayList<>();
         for (Long id : ids) {
             User user = userRepository.findById(id.longValue());
-            if(user != null) {
+            if (user != null) {
                 toReturn.add(user);
             }
         }
         return toReturn;
     }
 
-    public User saveUser(User user){
+    public User saveUser(User user) {
         return userRepository.save(user);
     }
 
