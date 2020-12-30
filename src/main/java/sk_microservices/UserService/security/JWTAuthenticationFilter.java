@@ -11,10 +11,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import sk_microservices.UserService.forms.Login_Form;
 
 import javax.servlet.FilterChain;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 
@@ -60,8 +62,14 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
                 .sign(HMAC512(SECRET.getBytes()));
 
-        res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
-        res.getWriter().append("OK");
+        String toWrite = TOKEN_PREFIX + token;
+
+        res.addHeader(HEADER_STRING, toWrite);
+        String encodedString = Base64.getEncoder().encodeToString(toWrite.getBytes());
+        res.addCookie(new Cookie(HEADER_STRING, encodedString));
+
+        res.getWriter().append(toWrite);
+        res.getWriter().flush();
         res.setStatus(200);
     }
 

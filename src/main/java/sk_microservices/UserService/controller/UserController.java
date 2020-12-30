@@ -15,7 +15,7 @@ import sk_microservices.UserService.service.UserService;
 import static sk_microservices.UserService.security.SecurityConstants.*;
 
 @Controller
-@RequestMapping("")
+@RequestMapping("/user")
 public class UserController {
 
     private BCryptPasswordEncoder encoder;

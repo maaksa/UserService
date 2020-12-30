@@ -12,10 +12,12 @@ import sk_microservices.UserService.repository.UserRepository;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 
 import static sk_microservices.UserService.security.SecurityConstants.*;
 
@@ -33,8 +35,22 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
 
         String token = req.getHeader(HEADER_STRING);
-
-        UsernamePasswordAuthenticationToken authentication = getAuthentication(req, token);
+        UsernamePasswordAuthenticationToken authentication = null;
+        if(req.getCookies() != null) {
+            Cookie[] cookies = req.getCookies();
+            for(int i = 0; i < cookies.length; i++){
+                if (cookies[i].getName().equals("Authorization")) {
+                    token = cookies[i].getValue();
+                    byte[] decodedBytes = Base64.getDecoder().decode(token);
+                    String decodedToken = new String(decodedBytes);
+                    authentication = getAuthentication(req, decodedToken);
+                    break;
+                }
+            }
+        }
+        if(authentication == null) {
+            authentication = getAuthentication(req, token);
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(req, res);

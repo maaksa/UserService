@@ -42,10 +42,10 @@
 
             <h1>Login</h1>
 
-            <form th:action="@{/login}" method="post" th:object="${user}">
+            <form th:action="@{/authenticate}" method="post" th:object="${user}">
 
                 <div class="form-group">
-                    <label class="control-label" for="email"> Email </label> <input
+                    <label class="control-label" for="email"> Email </label><input
                         id="email" class="form-control" th:field="*{email}" required
                         autofocus="autofocus" />
                 </div>

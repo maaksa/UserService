@@ -96,10 +96,26 @@
                 },
                 success: function (data) {
                     //save token
-                    //localStorage.setItem("token",data.token);
-                    console.log("Connection success " + data.toString());
-                    return
 
+                    localStorage.setItem("token", data);
+                    console.log("Connection success " + data);
+                    $.ajax({
+                        type: "GET",
+                        url: "/index",
+                        headers: {'Authorization' : data},
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                        cache: false,
+                        timeout: 600000,
+                        success: function (data) {
+                            console.log(data)
+                            $(location).attr('href', '/index')
+                        },
+                        error: function (e) {
+
+                        }
+                    });
                 }
             });
         });
