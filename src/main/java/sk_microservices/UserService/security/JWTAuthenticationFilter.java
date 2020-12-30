@@ -2,6 +2,7 @@ package sk_microservices.UserService.security;
 
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,8 @@ import sk_microservices.UserService.forms.Login_Form;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 
@@ -28,29 +31,38 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
-
+        BufferedReader reader = null;
+        Login_Form user = new Login_Form();
         try {
-            Login_Form user = new ObjectMapper().readValue(req.getInputStream(), Login_Form.class);
+            reader = req.getReader();
+            Gson gson = new Gson();
+            user = gson.fromJson(reader, Login_Form.class);
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(),
                     user.getPassword(), Collections.emptyList());
-
             return authenticationManager.authenticate(token);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
 
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) {
+    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException {
 
         String email = auth.getName();
-
         String token = JWT.create().withSubject(email)
                 .withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
                 .sign(HMAC512(SECRET.getBytes()));
 
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        res.getWriter().append("OK");
+        res.setStatus(200);
     }
 
 }

@@ -1,25 +1,20 @@
 package sk_microservices.UserService.controller;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import sk_microservices.UserService.entities.CreditCard;
 import sk_microservices.UserService.forms.*;
-import sk_microservices.UserService.repository.CreditCardRepository;
-import sk_microservices.UserService.service.NotificationService;
 import sk_microservices.UserService.entities.User;
-import sk_microservices.UserService.repository.UserRepository;
+import sk_microservices.UserService.security.JWTAuthenticationFilter;
 import sk_microservices.UserService.service.UserService;
-import sk_microservices.UserService.utils.UtilsMethods;
 
 import static sk_microservices.UserService.security.SecurityConstants.*;
 
-@RestController
+@Controller
 @RequestMapping("")
 public class UserController {
 
@@ -32,6 +27,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    /*
     @PostMapping("/register")
     public ResponseEntity<String> subtractionPost(@RequestBody RegistrationForm registrationForm) {
 
@@ -48,6 +44,30 @@ public class UserController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+    */
+
+    @GetMapping("/login")
+    public String login(Model model) {
+        model.addAttribute("user", new Login_Form());
+        return "user/login";
+    }
+
+    @GetMapping("/register")
+    public String registrationForm(Model model) {
+
+        RegistrationForm user = new RegistrationForm();
+        model.addAttribute("user", user);
+
+        return "user/register";
+    }
+
+    @PostMapping("/register")
+    public String registerUserAccount(@ModelAttribute("user") RegistrationForm registrationForm) {
+        User user = new User(registrationForm.getIme(), registrationForm.getPrezime(), registrationForm.getEmail(),
+                encoder.encode(registrationForm.getPassword()), registrationForm.getBrojPasosa());
+        user = userService.saveAndFlush(user);
+        return "redirect:/login";
     }
 
     @PostMapping("/editProfil")

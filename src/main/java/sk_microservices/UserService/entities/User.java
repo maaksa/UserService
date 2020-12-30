@@ -44,7 +44,6 @@ public class User {
         this.email = email;
         this.password = password;
         this.brojPasosa = brojPasosa;
-        this.brojMilja =50;
     }
 
 }
