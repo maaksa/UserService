@@ -2,7 +2,9 @@ package sk_microservices.UserService.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import sk_microservices.UserService.entities.CreditCard;
 import sk_microservices.UserService.entities.User;
@@ -11,12 +13,14 @@ import sk_microservices.UserService.forms.UserProfilEditForm;
 import sk_microservices.UserService.repository.CreditCardRepository;
 import sk_microservices.UserService.repository.UserRepository;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-import static sk_microservices.UserService.security.SecurityConstants.SECRET;
-import static sk_microservices.UserService.security.SecurityConstants.TOKEN_PREFIX;
+import static sk_microservices.UserService.security.SecurityConstants.*;
 
 @Service
 public class UserService {
@@ -43,51 +47,56 @@ public class UserService {
         return true;
     }
 
-    public CreditCard saveCreditCard(String token, AddCreditCardForm addCreditCardForm) {
-        String email = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
-                .verify(token.replace(TOKEN_PREFIX, "")).getSubject();
+    public String decodeToken(HttpServletRequest req) {
+        String token = req.getHeader(HEADER_STRING);
+        if (req.getCookies() != null) {
+            Cookie[] cookies = req.getCookies();
+            for (int i = 0; i < cookies.length; i++) {
+                if (cookies[i].getName().equals("Authorization")) {
+                    token = cookies[i].getValue();
+                    byte[] decodedBytes = Base64.getDecoder().decode(token);
+                    String decodedToken = new String(decodedBytes);
+                    return decodedToken;
+                }
+            }
+        }
 
-        String cardName = addCreditCardForm.getCardName();
-        long cardNumber = addCreditCardForm.getCardNumber();
-        int securityCode = addCreditCardForm.getSecurityCode();
+        return null;
+    }
 
-        User user = userRepository.findByEmail(email);
-
-        CreditCard creditCard = new CreditCard(cardName, cardNumber, securityCode, user);
+    public CreditCard saveCreditCard(User user, CreditCard creditCard) {
+        creditCard.setUser(user);
 
         return creditCardRepository.save(creditCard);
     }
 
-    public User editUser(String token, UserProfilEditForm userProfilEditForm) {
+    public User getAuthentication(String token) {
+        DecodedJWT jwt = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
+                .verify(token.replace(TOKEN_PREFIX, ""));
 
-        String email = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
-                .verify(token.replace(TOKEN_PREFIX, "")).getSubject();
+        String email = jwt.getSubject();
 
-        String newIme = userProfilEditForm.getIme();
-        String newPrezime = userProfilEditForm.getPrezime();
-        String newEmail = userProfilEditForm.getEmail();
-        String newPassword = userProfilEditForm.getPassword();
-        long newBrojPasosa = userProfilEditForm.getBrojPasosa();
+        if (email != null) {
+            return userRepository.findByEmail(email);
+        }
 
-        User user = userRepository.findByEmail(email);
+        return null;
+    }
 
-        user.setIme(newIme);
-        user.setPrezime(newPrezime);
-        user.setBrojPasosa(newBrojPasosa);
-        user.setPassword(newPassword);
+    public User editUser(User userUpdate, User user) {
 
-        if (!newEmail.isEmpty() && !newEmail.equals(user.getEmail())) {
-            user.setEmail(newEmail);
+        user.setBrojPasosa(userUpdate.getBrojPasosa());
+        user.setPrezime(userUpdate.getPrezime());
+        user.setIme(userUpdate.getIme());
 
+        if(!(userUpdate.getEmail().equals(user.getEmail()))){
+            user.setEmail(userUpdate.getEmail());
             //send email
             //notificationService.sendMail(userToSend.getEmail());
-
-            user = userRepository.save(user);
-            notificationService.sendMail(user.getEmail());
+            return userRepository.save(user);
         } else {
-            user = userRepository.save(user);
+            return userRepository.save(user);
         }
-        return user;
     }
 
     public User saveAndFlush(User user) {

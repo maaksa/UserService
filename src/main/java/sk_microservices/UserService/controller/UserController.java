@@ -7,10 +7,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import sk_microservices.UserService.entities.CreditCard;
+import sk_microservices.UserService.entities.flightService.Airplane;
 import sk_microservices.UserService.forms.*;
 import sk_microservices.UserService.entities.User;
+import sk_microservices.UserService.forms.flightService.AddAirplaneForm;
 import sk_microservices.UserService.security.JWTAuthenticationFilter;
 import sk_microservices.UserService.service.UserService;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
+import java.util.Base64;
+import java.util.List;
 
 import static sk_microservices.UserService.security.SecurityConstants.*;
 
@@ -70,27 +79,92 @@ public class UserController {
         return "redirect:/login";
     }
 
-    @PostMapping("/editProfil")
-    public ResponseEntity<String> editProfil(@RequestHeader(value = HEADER_STRING) String token, @RequestBody UserProfilEditForm userProfilEditForm) {
+    @GetMapping("/showFormForUpdate")
+    public String editProfil(@RequestParam("userId") long theId, Model theModel) {
 
         try {
-            userService.editUser(token, userProfilEditForm);
-            return new ResponseEntity<>("successfully edited", HttpStatus.ACCEPTED);
+            theModel.addAttribute("user", new UserProfilEditForm());
+            theModel.addAttribute("userEdit", userService.findById(theId));
+
+            return "user/edit-profile";
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return null;
         }
     }
 
-    @PostMapping("/addCreditCard")
-    public ResponseEntity<String> addCreditCard(@RequestHeader(value = HEADER_STRING) String token, @RequestBody AddCreditCardForm addCreditCardForm) {
+    @PostMapping("/saveEditProfile")
+    public String saveEditProfile(HttpServletRequest req, @ModelAttribute("userEdit") User user) {
         try {
-            userService.saveCreditCard(token, addCreditCardForm);
-            return new ResponseEntity<>("successfully added", HttpStatus.ACCEPTED);
+
+            String decodedToken = userService.decodeToken(req);
+            User usr = userService.getAuthentication(decodedToken);
+
+            userService.editUser(user, usr);
+
+            return "redirect:/user/profile";
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return "redirect:/error";
         }
+    }
+
+    @GetMapping("/showCards")
+    public String showCards(HttpServletRequest req, @RequestParam("userId") long theId, Model theModel) {
+
+        try {
+
+            String decodedToken = userService.decodeToken(req);
+            User usr = userService.getAuthentication(decodedToken);
+
+            List<CreditCard> creditCards = usr.getCreditCards();
+
+            theModel.addAttribute("cards", creditCards);
+
+            return "card/list-cards";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/showFormForAddCard")
+    public String showFormForAddCard(Model theModel) {
+        try {
+
+            theModel.addAttribute("card", new AddCreditCardForm());
+
+            return "card/card-form";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/error";
+        }
+    }
+
+    @PostMapping("/saveCard")
+    public String saveAirplane(HttpServletRequest req, @ModelAttribute("card") CreditCard theCreditCard) {
+        try {
+            String decodedToken = userService.decodeToken(req);
+            User user = userService.getAuthentication(decodedToken);
+
+            userService.saveCreditCard(user, theCreditCard);
+
+            return "redirect:/user/profile";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/error";
+        }
+    }
+
+
+    @GetMapping("/profile")
+    public String userProfile(HttpServletRequest req, Model theModel) {
+
+        String decodedToken = userService.decodeToken(req);
+        User user = userService.getAuthentication(decodedToken);
+        theModel.addAttribute("user", user);
+
+        return "user/profile";
     }
 
     @GetMapping("/checkUser")
@@ -103,19 +177,5 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
-    //za GUI //todo
-//    @GetMapping("/getAllFlights")
-//    public ResponseEntity<String> getAllFlights() {
-//
-//        try {
-//            ResponseEntity<String> response = UtilsMethods.sendGet("http://localhost:8081/flight/list");
-//
-//            return response;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//    }
 
 }
