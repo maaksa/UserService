@@ -64,8 +64,15 @@ public class UserService {
         return null;
     }
 
-    public CreditCard saveCreditCard(User user, CreditCard creditCard) {
-        creditCard.setUser(user);
+    public CreditCard saveCreditCard(String token, AddCreditCardForm creditCardForm) {
+        DecodedJWT jwt = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
+                .verify(token.replace(TOKEN_PREFIX, ""));
+
+        String email = jwt.getSubject();
+        User user = userRepository.findByEmail(email);
+
+        CreditCard creditCard = new CreditCard(creditCardForm.getCardName(), creditCardForm.getCardNumber(),
+                creditCardForm.getSecurityCode(), user);
 
         return creditCardRepository.save(creditCard);
     }
@@ -83,14 +90,21 @@ public class UserService {
         return null;
     }
 
-    public User editUser(User userUpdate, User user) {
+    public User editUser(String token, UserProfilEditForm userProfilEditForm) {
 
-        user.setBrojPasosa(userUpdate.getBrojPasosa());
-        user.setPrezime(userUpdate.getPrezime());
-        user.setIme(userUpdate.getIme());
+        DecodedJWT jwt = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
+                .verify(token.replace(TOKEN_PREFIX, ""));
 
-        if(!(userUpdate.getEmail().equals(user.getEmail()))){
-            user.setEmail(userUpdate.getEmail());
+        String email = jwt.getSubject();
+
+        User user = userRepository.findByEmail(email);
+
+        user.setBrojPasosa(userProfilEditForm.getBrojPasosa());
+        user.setPrezime(userProfilEditForm.getPrezime());
+        user.setIme(userProfilEditForm.getIme());
+
+        if(!(userProfilEditForm.getEmail().equals(user.getEmail()))){
+            user.setEmail(userProfilEditForm.getEmail());
             //send email
             //notificationService.sendMail(userToSend.getEmail());
             return userRepository.save(user);

@@ -32,26 +32,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    /*
-    @PostMapping("/register")
-    public ResponseEntity<String> subtractionPost(@RequestBody RegistrationForm registrationForm) {
-
-        try {
-            User user = new User(registrationForm.getIme(), registrationForm.getPrezime(), registrationForm.getEmail(),
-                    encoder.encode(registrationForm.getPassword()), registrationForm.getBrojPasosa());
-            User userToSend = userService.saveAndFlush(user);
-
-            //send email
-            //notificationService.sendMail(userToSend.getEmail());
-
-            return new ResponseEntity<>("success", HttpStatus.ACCEPTED);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-    */
-
     @PostMapping("/editProfil")
     public ResponseEntity<String> editProfil(@RequestHeader(value = HEADER_STRING) String token, @RequestBody UserProfilEditForm userProfilEditForm) {
 
@@ -87,41 +67,14 @@ public class UserController {
     }
 
     @GetMapping("/getUser")
-    public ResponseEntity<Object> getUser(HttpServletRequest req){
+    public ResponseEntity<Object> getUser(@RequestHeader(value = HEADER_STRING) String token){
         try {
-            String token;
-            User toReturn = null;
-            if(req.getCookies() != null) {
-                Cookie[] cookies = req.getCookies();
-                for(int i = 0; i < cookies.length; i++){
-                    if (cookies[i].getName().equals("Authorization")) {
-                        token = cookies[i].getValue();
-                        byte[] decodedBytes = Base64.getDecoder().decode(token);
-                        String decodedToken = new String(decodedBytes);
-                        toReturn = userService.getUser(decodedToken);
-                        break;
-                    }
-                }
-            }
+            User toReturn = userService.getAuthentication(token);
             return new ResponseEntity<>(toReturn, HttpStatus.ACCEPTED);
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
-    //za GUI //todo
-//    @GetMapping("/getAllFlights")
-//    public ResponseEntity<String> getAllFlights() {
-//
-//        try {
-//            ResponseEntity<String> response = UtilsMethods.sendGet("http://localhost:8081/flight/list");
-//
-//            return response;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//    }
 
 }
