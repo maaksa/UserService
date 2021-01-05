@@ -8,7 +8,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import sk_microservices.UserService.forms.JwtResponseForm;
 import sk_microservices.UserService.forms.Login_Form;
+import sk_microservices.UserService.repository.UserRepository;
+import sk_microservices.UserService.service.UserService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.Cookie;
@@ -37,6 +40,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Login_Form user = new Login_Form();
         try {
             reader = req.getReader();
+            System.out.println(reader.readLine());
             Gson gson = new Gson();
             user = gson.fromJson(reader, Login_Form.class);
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(),
@@ -57,6 +61,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException {
 
+        System.out.println(auth.getPrincipal());
+
         String email = auth.getName();
         String token = JWT.create().withSubject(email)
                 .withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
@@ -65,8 +71,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String toWrite = TOKEN_PREFIX + token;
 
         res.addHeader(HEADER_STRING, toWrite);
-        String encodedString = Base64.getEncoder().encodeToString(toWrite.getBytes());
-        res.addCookie(new Cookie(HEADER_STRING, encodedString));
+
+        System.out.println(toWrite);
 
         res.getWriter().append(toWrite);
         res.getWriter().flush();

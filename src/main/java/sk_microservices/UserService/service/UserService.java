@@ -10,6 +10,7 @@ import sk_microservices.UserService.forms.AddCreditCardForm;
 import sk_microservices.UserService.forms.UserProfilEditForm;
 import sk_microservices.UserService.repository.CreditCardRepository;
 import sk_microservices.UserService.repository.UserRepository;
+import sk_microservices.UserService.utils.JwtUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,13 @@ public class UserService {
         }
 
         return true;
+    }
+
+    public User getUser(String token){
+        String email = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
+                .verify(token.replace(TOKEN_PREFIX, "")).getSubject();
+
+        return userRepository.findByEmail(email);
     }
 
     public CreditCard saveCreditCard(String token, AddCreditCardForm addCreditCardForm) {

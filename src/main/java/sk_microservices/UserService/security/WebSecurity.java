@@ -19,8 +19,7 @@ import sk_microservices.UserService.repository.UserRepository;
 
 import java.util.Arrays;
 
-import static sk_microservices.UserService.security.SecurityConstants.LOGIN_PATH;
-import static sk_microservices.UserService.security.SecurityConstants.REGISTRATION_PATH;
+import static sk_microservices.UserService.security.SecurityConstants.*;
 
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
@@ -51,11 +50,11 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
         */
         http.csrf().disable().authorizeRequests()
-                .antMatchers(REGISTRATION_PATH, LOGIN_PATH).permitAll()
+                .antMatchers(REGISTRATION_PATH, LOGIN_PATH, SIGNIN_PATH, "/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .logout().deleteCookies("Authorization").invalidateHttpSession(true).clearAuthentication(true)
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login?logout")
+                .logout().deleteCookies(HEADER_STRING).invalidateHttpSession(true).clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout")).logoutSuccessUrl("/rest-user-service/auth/login?logout")
                 .permitAll()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))

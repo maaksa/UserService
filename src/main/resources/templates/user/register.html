@@ -21,7 +21,7 @@
                     class="icon-bar"></span> <span class="icon-bar"></span> <span
                     class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#" th:href="@{/}">Registration and
+            <a class="navbar-brand" href="#" th:href="@{http://localhost:8762/rest-user-service/auth/login}">Registration and
                 Login Module</a>
         </div>
     </div>
@@ -42,7 +42,7 @@
 
             <h1>Registration</h1>
 
-            <form th:action="@{/register}" method="post" th:object="${user}">
+            <form th:action="@{/rest-user-service/auth/register}" method="post" th:object="${user}">
                 <div class="form-group">
                     <label class="control-label" for="ime"> First Name </label>
                     <input id="ime" class="form-control" th:field="*{ime}"
@@ -75,7 +75,7 @@
 
                 <div class="form-group">
                     <button type="submit" class="btn btn-success">Register</button>
-                    <span>Already registered? <a href="/" th:href="@{/login}">Login
+                    <span>Already registered? <a href="/" th:href="@{http://localhost:8762/rest-user-service/auth/login}">Login
 								here</a></span>
                 </div>
             </form>

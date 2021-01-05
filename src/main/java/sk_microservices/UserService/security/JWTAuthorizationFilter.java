@@ -25,7 +25,6 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepo;
 
-    @Autowired
     public JWTAuthorizationFilter(AuthenticationManager authManager, UserRepository userRepo) {
         super(authManager);
         this.userRepo = userRepo;
@@ -36,24 +35,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
         String token = req.getHeader(HEADER_STRING);
         UsernamePasswordAuthenticationToken authentication = null;
-        if(req.getCookies() != null) {
-            Cookie[] cookies = req.getCookies();
-            for(int i = 0; i < cookies.length; i++){
-                if (cookies[i].getName().equals("Authorization")) {
-                    token = cookies[i].getValue();
-                    byte[] decodedBytes = Base64.getDecoder().decode(token);
-                    String decodedToken = new String(decodedBytes);
-                    authentication = getAuthentication(req, decodedToken);
-                    break;
-                }
-            }
+        authentication = getAuthentication(req, token);
+        if(authentication != null) {
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        if(authentication == null) {
-            authentication = getAuthentication(req, token);
-        }
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(req, res);
+
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request, String token) {

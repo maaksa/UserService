@@ -51,4 +51,11 @@ public class JwtUtil {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    public String getSECRET_KEY() {
+        return SECRET_KEY;
+    }
+
+    public void setSECRET_KEY(String SECRET_KEY) {
+        this.SECRET_KEY = SECRET_KEY;
+    }
 }

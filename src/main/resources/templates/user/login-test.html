@@ -24,7 +24,7 @@
                     class="icon-bar"></span> <span class="icon-bar"></span> <span
                     class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#" th:href="@{/}">Registration and
+            <a class="navbar-brand" href="#" th:href="@{http://localhost:8762/rest-user-service/auth/login}">Registration and
                 Login Module</a>
         </div>
     </div>
@@ -71,7 +71,7 @@
                 </div>
             </div>
             <div class="form-group">
-						<span>New user? <a href="/" th:href="@{/register}">Register
+						<span>New user? <a href="/" th:href="@{http://localhost:8762/rest-user-service/auth/register}">Register
 								here</a></span>
             </div>
         </div>
@@ -86,7 +86,7 @@
             $.ajax({
                 cache: true,
                 type: "POST",
-                url: "/login",
+                url: "http://localhost:8762/rest-user-service/login",
                 contentType: "application/json;charset=UTF-8",
                 data:JSON.stringify({"email":email ,"password" : password}),
                 dataType: "text",
@@ -95,13 +95,9 @@
                     console.log("Connection error" + response);
                 },
                 success: function (data) {
-                    //save token
-
-                    localStorage.setItem("token", data);
-                    console.log("Connection success " + data);
                     $.ajax({
                         type: "GET",
-                        url: "/index",
+                        url: "http://localhost:8762/rest-user-service/auth/index",
                         headers: {'Authorization' : data},
                         xhrFields: {
                             withCredentials: true
@@ -110,7 +106,7 @@
                         timeout: 600000,
                         success: function (data) {
                             console.log(data)
-                            $(location).attr('href', '/index')
+                            $(location).attr('href', 'http://localhost:8762/rest-user-service/auth/index')
                         },
                         error: function (e) {
 

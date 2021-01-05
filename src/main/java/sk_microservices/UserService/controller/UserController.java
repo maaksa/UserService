@@ -12,6 +12,11 @@ import sk_microservices.UserService.entities.User;
 import sk_microservices.UserService.security.JWTAuthenticationFilter;
 import sk_microservices.UserService.service.UserService;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
+import java.util.Base64;
+
 import static sk_microservices.UserService.security.SecurityConstants.*;
 
 @Controller
@@ -47,29 +52,6 @@ public class UserController {
     }
     */
 
-    @GetMapping("/login")
-    public String login(Model model) {
-        model.addAttribute("user", new Login_Form());
-        return "user/login";
-    }
-
-    @GetMapping("/register")
-    public String registrationForm(Model model) {
-
-        RegistrationForm user = new RegistrationForm();
-        model.addAttribute("user", user);
-
-        return "user/register";
-    }
-
-    @PostMapping("/register")
-    public String registerUserAccount(@ModelAttribute("user") RegistrationForm registrationForm) {
-        User user = new User(registrationForm.getIme(), registrationForm.getPrezime(), registrationForm.getEmail(),
-                encoder.encode(registrationForm.getPassword()), registrationForm.getBrojPasosa());
-        user = userService.saveAndFlush(user);
-        return "redirect:/login";
-    }
-
     @PostMapping("/editProfil")
     public ResponseEntity<String> editProfil(@RequestHeader(value = HEADER_STRING) String token, @RequestBody UserProfilEditForm userProfilEditForm) {
 
@@ -94,11 +76,35 @@ public class UserController {
     }
 
     @GetMapping("/checkUser")
-    public ResponseEntity<Object> getAllFlights(@RequestHeader(value = HEADER_STRING) String token) {
+    public ResponseEntity<Object> checkUser(@RequestHeader(value = HEADER_STRING) String token) {
         try {
             Boolean toReturn = userService.check(token);
             return new ResponseEntity<>(toReturn, HttpStatus.ACCEPTED);
         } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getUser")
+    public ResponseEntity<Object> getUser(HttpServletRequest req){
+        try {
+            String token;
+            User toReturn = null;
+            if(req.getCookies() != null) {
+                Cookie[] cookies = req.getCookies();
+                for(int i = 0; i < cookies.length; i++){
+                    if (cookies[i].getName().equals("Authorization")) {
+                        token = cookies[i].getValue();
+                        byte[] decodedBytes = Base64.getDecoder().decode(token);
+                        String decodedToken = new String(decodedBytes);
+                        toReturn = userService.getUser(decodedToken);
+                        break;
+                    }
+                }
+            }
+            return new ResponseEntity<>(toReturn, HttpStatus.ACCEPTED);
+        }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
