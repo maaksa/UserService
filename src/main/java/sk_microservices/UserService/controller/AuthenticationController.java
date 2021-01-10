@@ -1,30 +1,20 @@
 package sk_microservices.UserService.controller;
 
 import com.auth0.jwt.JWT;
-import com.google.gson.Gson;
-import io.jsonwebtoken.Jwt;
-import lombok.extern.java.Log;
-import org.hibernate.engine.internal.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import sk_microservices.UserService.entities.User;
-import sk_microservices.UserService.forms.JwtResponseForm;
 import sk_microservices.UserService.forms.Login_Form;
 import sk_microservices.UserService.forms.RegistrationForm;
 import sk_microservices.UserService.service.UserService;
-import sk_microservices.UserService.utils.JwtUtil;
 
-import javax.validation.Valid;
 import java.util.Date;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;

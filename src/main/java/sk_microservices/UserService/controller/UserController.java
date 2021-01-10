@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 import static sk_microservices.UserService.security.SecurityConstants.*;
 
@@ -91,4 +92,31 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getUserId")
+    public ResponseEntity<Long> getUserId(@RequestHeader(value = HEADER_STRING) String token){
+        try {
+            User user = userService.getAuthentication(token);
+            return new ResponseEntity<Long>(user.getId(), HttpStatus.ACCEPTED);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getCreditCards")
+    public ResponseEntity<List<AddCreditCardForm>> getCreditCards(@RequestHeader(value = HEADER_STRING) String token){
+        try {
+            User user = userService.getAuthentication(token);
+            List<AddCreditCardForm> toReturn = new ArrayList<>();
+            for (CreditCard creditCard : user.getCreditCards()) {
+                AddCreditCardForm creditCardForm = new AddCreditCardForm(creditCard.getIme(), creditCard.getPrezime(),
+                        creditCard.getBroj(), creditCard.getPin());
+                toReturn.add(creditCardForm);
+            }
+            return new ResponseEntity<List<AddCreditCardForm>>(toReturn, HttpStatus.ACCEPTED);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

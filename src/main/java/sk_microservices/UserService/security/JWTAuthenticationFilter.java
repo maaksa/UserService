@@ -1,25 +1,19 @@
 package sk_microservices.UserService.security;
 
 import com.auth0.jwt.JWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import sk_microservices.UserService.forms.JwtResponseForm;
 import sk_microservices.UserService.forms.Login_Form;
-import sk_microservices.UserService.repository.UserRepository;
-import sk_microservices.UserService.service.UserService;
 
 import javax.servlet.FilterChain;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 
