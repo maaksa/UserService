@@ -18,19 +18,22 @@ public class CreditCard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String cardName;
+    private String ime;
 
-    private long cardNumber;
+    private String prezime;
 
-    private int securityCode;
+    private long broj;
+
+    private int pin;
 
     @ManyToOne()
     private User user;
 
-    public CreditCard(String cardName, long cardNumber, int securityCode, User user) {
-        this.cardName = cardName;
-        this.cardNumber = cardNumber;
-        this.securityCode = securityCode;
+    public CreditCard(String ime, String prezime, long broj, int pin, User user) {
+        this.ime = ime;
+        this.prezime = prezime;
+        this.broj = broj;
+        this.pin = pin;
         this.user = user;
     }
 

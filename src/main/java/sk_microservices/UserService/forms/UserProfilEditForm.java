@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -15,7 +17,7 @@ public class UserProfilEditForm {
     private String ime;
     private String prezime;
     private String email;
-    private String password;
     private long brojPasosa;
+    private List<AddCreditCardForm> cards;
 
 }

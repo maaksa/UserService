@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwt;
 import lombok.extern.java.Log;
 import org.hibernate.engine.internal.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -70,27 +71,18 @@ public class AuthenticationController {
         return "user/login-test";
     }
 
-    @GetMapping("/register")
-    public String registrationForm(Model model) {
-
-        RegistrationForm user = new RegistrationForm();
-        model.addAttribute("user", user);
-
-        return "user/register";
-    }
-
     @PostMapping("/register")
-    public String registerUserAccount(@ModelAttribute("user") RegistrationForm registrationForm) {
-        User user = new User(registrationForm.getIme(), registrationForm.getPrezime(), registrationForm.getEmail(),
-                encoder.encode(registrationForm.getPassword()), registrationForm.getBrojPasosa());
-        user = userService.saveAndFlush(user);
-        //todo send email
-        return "redirect:http://localhost:8762/rest-user-service/auth/login";
-    }
+    public ResponseEntity<?> registerUserAccount(@RequestBody RegistrationForm registrationForm) {
+        try {
+            User user = new User(registrationForm.getIme(), registrationForm.getPrezime(), registrationForm.getEmail(),
+                    encoder.encode(registrationForm.getPassword()), registrationForm.getBrojPasosa());
+            user = userService.saveAndFlush(user);
 
-    @GetMapping("/index")
-    public String index(){
-        return "static/index";
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

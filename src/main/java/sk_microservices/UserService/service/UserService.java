@@ -47,23 +47,6 @@ public class UserService {
         return true;
     }
 
-    public String decodeToken(HttpServletRequest req) {
-        String token = req.getHeader(HEADER_STRING);
-        if (req.getCookies() != null) {
-            Cookie[] cookies = req.getCookies();
-            for (int i = 0; i < cookies.length; i++) {
-                if (cookies[i].getName().equals("Authorization")) {
-                    token = cookies[i].getValue();
-                    byte[] decodedBytes = Base64.getDecoder().decode(token);
-                    String decodedToken = new String(decodedBytes);
-                    return decodedToken;
-                }
-            }
-        }
-
-        return null;
-    }
-
     public CreditCard saveCreditCard(String token, AddCreditCardForm creditCardForm) {
         DecodedJWT jwt = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
                 .verify(token.replace(TOKEN_PREFIX, ""));
@@ -71,9 +54,8 @@ public class UserService {
         String email = jwt.getSubject();
         User user = userRepository.findByEmail(email);
 
-        CreditCard creditCard = new CreditCard(creditCardForm.getCardName(), creditCardForm.getCardNumber(),
-                creditCardForm.getSecurityCode(), user);
-
+        CreditCard creditCard = new CreditCard(creditCardForm.getIme(), creditCardForm.getPrezime(), creditCardForm.getBroj(),
+                creditCardForm.getPin(), user);
         return creditCardRepository.save(creditCard);
     }
 

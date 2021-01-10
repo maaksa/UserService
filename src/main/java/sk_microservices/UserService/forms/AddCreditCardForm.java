@@ -11,8 +11,9 @@ import lombok.Setter;
 @Setter
 public class AddCreditCardForm {
 
-    private String cardName;
-    private long cardNumber;
-    private int securityCode;
+    private String ime;
+    private String prezime;
+    private long broj;
+    private int pin;
 
 }

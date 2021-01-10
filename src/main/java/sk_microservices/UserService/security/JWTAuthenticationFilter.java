@@ -61,8 +61,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException {
 
-        System.out.println(auth.getPrincipal());
-
         String email = auth.getName();
         String token = JWT.create().withSubject(email)
                 .withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
@@ -72,7 +70,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         res.addHeader(HEADER_STRING, toWrite);
 
-        System.out.println(toWrite);
 
         res.getWriter().append(toWrite);
         res.getWriter().flush();

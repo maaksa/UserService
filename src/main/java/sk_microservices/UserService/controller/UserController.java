@@ -7,6 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import sk_microservices.UserService.entities.CreditCard;
 import sk_microservices.UserService.forms.*;
 import sk_microservices.UserService.entities.User;
 import sk_microservices.UserService.security.JWTAuthenticationFilter;
@@ -15,11 +16,12 @@ import sk_microservices.UserService.service.UserService;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.ArrayList;
 import java.util.Base64;
 
 import static sk_microservices.UserService.security.SecurityConstants.*;
 
-@Controller
+@RestController
 @RequestMapping("/user")
 public class UserController {
 
@@ -32,10 +34,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/editProfil")
-    public ResponseEntity<String> editProfil(@RequestHeader(value = HEADER_STRING) String token, @RequestBody UserProfilEditForm userProfilEditForm) {
-
+    @PostMapping("/editProfile")
+    public ResponseEntity<String> editProfil(HttpServletRequest req, @RequestBody UserProfilEditForm userProfilEditForm) {
         try {
+            String token = req.getHeader(HEADER_STRING);
             userService.editUser(token, userProfilEditForm);
             return new ResponseEntity<>("successfully edited", HttpStatus.ACCEPTED);
         } catch (Exception e) {
@@ -45,10 +47,15 @@ public class UserController {
     }
 
     @PostMapping("/addCreditCard")
-    public ResponseEntity<String> addCreditCard(@RequestHeader(value = HEADER_STRING) String token, @RequestBody AddCreditCardForm addCreditCardForm) {
+    public ResponseEntity<Object> addCreditCard(HttpServletRequest req, @RequestBody AddCreditCardForm addCreditCardForm) {
         try {
-            userService.saveCreditCard(token, addCreditCardForm);
-            return new ResponseEntity<>("successfully added", HttpStatus.ACCEPTED);
+            System.out.println("adding");
+            String token = req.getHeader(HEADER_STRING);
+            CreditCard creditCard = userService.saveCreditCard(token, addCreditCardForm);
+            AddCreditCardForm creditCardForm = new AddCreditCardForm(creditCard.getIme(), creditCard.getPrezime(),
+                    creditCard.getBroj(), creditCard.getPin());
+            System.out.println(creditCardForm);
+            return new ResponseEntity<>(creditCardForm, HttpStatus.ACCEPTED);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -69,7 +76,13 @@ public class UserController {
     @GetMapping("/getUser")
     public ResponseEntity<Object> getUser(@RequestHeader(value = HEADER_STRING) String token){
         try {
-            User toReturn = userService.getAuthentication(token);
+            User user = userService.getAuthentication(token);
+            UserProfilEditForm toReturn = new UserProfilEditForm(user.getIme(), user.getPrezime(), user.getEmail(), user.getBrojPasosa(), new ArrayList<AddCreditCardForm>());
+            for (CreditCard creditCard : user.getCreditCards()) {
+                AddCreditCardForm creditCardForm = new AddCreditCardForm(creditCard.getIme(), creditCard.getPrezime(),
+                        creditCard.getBroj(), creditCard.getPin());
+                toReturn.getCards().add(creditCardForm);
+            }
             return new ResponseEntity<>(toReturn, HttpStatus.ACCEPTED);
         }catch (Exception e){
             e.printStackTrace();
