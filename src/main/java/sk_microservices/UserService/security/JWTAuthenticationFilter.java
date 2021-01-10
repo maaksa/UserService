@@ -37,6 +37,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
         BufferedReader reader = null;
+        System.out.println("auth");
         Login_Form user = new Login_Form();
         try {
             reader = req.getReader();

@@ -65,6 +65,7 @@ public class UserController {
     @GetMapping("/checkUser")
     public ResponseEntity<Object> checkUser(@RequestHeader(value = HEADER_STRING) String token) {
         try {
+            System.out.println("here");
             Boolean toReturn = userService.check(token);
             return new ResponseEntity<>(toReturn, HttpStatus.ACCEPTED);
         } catch (Exception e) {
