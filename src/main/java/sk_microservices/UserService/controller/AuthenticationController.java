@@ -11,8 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import sk_microservices.UserService.entities.User;
+import sk_microservices.UserService.entities.enums.EmailMessage;
 import sk_microservices.UserService.forms.Login_Form;
 import sk_microservices.UserService.forms.RegistrationForm;
+import sk_microservices.UserService.service.NotificationService;
 import sk_microservices.UserService.service.UserService;
 
 import java.util.Date;
@@ -28,6 +30,9 @@ public class AuthenticationController {
     private BCryptPasswordEncoder encoder;
     private UserService userService;
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     public AuthenticationController(BCryptPasswordEncoder encoder, UserService userService,
@@ -67,6 +72,9 @@ public class AuthenticationController {
             User user = new User(registrationForm.getIme(), registrationForm.getPrezime(), registrationForm.getEmail(),
                     encoder.encode(registrationForm.getPassword()), registrationForm.getBrojPasosa());
             user = userService.saveAndFlush(user);
+
+            //send email
+            //notificationService.sendMail(user.getEmail(), EmailMessage.REGISTER);
 
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }catch (Exception e){

@@ -17,4 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
+    @Query("select u.brojMilja from User u where u.id = :id")
+    int getMilje(long id);
+
 }

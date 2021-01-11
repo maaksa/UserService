@@ -8,6 +8,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 import sk_microservices.UserService.entities.CreditCard;
 import sk_microservices.UserService.entities.User;
+import sk_microservices.UserService.entities.enums.EmailMessage;
+import sk_microservices.UserService.entities.enums.Rank;
 import sk_microservices.UserService.forms.AddCreditCardForm;
 import sk_microservices.UserService.forms.UserProfilEditForm;
 import sk_microservices.UserService.repository.CreditCardRepository;
@@ -45,6 +47,30 @@ public class UserService {
         }
 
         return true;
+    }
+
+    public void updateRunk(User user){
+        int userMiles = user.getBrojMilja();
+        if(userMiles > 10000){
+            user.setRank(Rank.ZLATO);
+        }
+        else if(userMiles > 1000){
+            user.setRank(Rank.SREBRO);
+        }
+        else
+            user.setRank(Rank.BRONZA);
+    }
+
+    public Rank getMiles(long id){
+        int miles = userRepository.getMilje(id);
+        if(miles > 10000){
+            return Rank.ZLATO;
+        }
+        else if(miles > 1000){
+            return Rank.SREBRO;
+        }
+        else
+            return Rank.BRONZA;
     }
 
     public CreditCard saveCreditCard(String token, AddCreditCardForm creditCardForm) {
@@ -87,8 +113,10 @@ public class UserService {
 
         if(!(userProfilEditForm.getEmail().equals(user.getEmail()))){
             user.setEmail(userProfilEditForm.getEmail());
+
             //send email
-            //notificationService.sendMail(userToSend.getEmail());
+            //otificationService.sendMail(user.getEmail(), EmailMessage.EDIT);
+
             return userRepository.save(user);
         } else {
             return userRepository.save(user);

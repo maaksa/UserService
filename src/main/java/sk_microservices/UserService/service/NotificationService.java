@@ -6,6 +6,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import sk_microservices.UserService.entities.User;
+import sk_microservices.UserService.entities.enums.EmailMessage;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -15,7 +16,7 @@ import java.util.Properties;
 @Service
 public class NotificationService {
 
-    public void sendMail(String email) {
+    public void sendMail(String email, EmailMessage enumMessage) {
 
         String to = "test@example.com";
 
@@ -45,9 +46,20 @@ public class NotificationService {
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(email));
 
-            message.setSubject("Email Verification");
-
-            message.setText("Hi there, please verify your email address");
+            switch (enumMessage){
+                case REGISTER:
+                    message.setSubject("Email Verification");
+                    message.setText("Hi there, please verify your email address");
+                    break;
+                case EDIT:
+                    message.setSubject("Email Verification");
+                    message.setText("Hi there, please verify your new email address");
+                    break;
+                case REFUNDS:
+                    message.setSubject("Refunds");
+                    message.setText("Hi there, the flight you booked has been canceled");
+                    break;
+            }
 
             Transport.send(message);
 

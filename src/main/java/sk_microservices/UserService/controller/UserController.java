@@ -1,5 +1,8 @@
 package sk_microservices.UserService.controller;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import sk_microservices.UserService.entities.CreditCard;
+import sk_microservices.UserService.entities.enums.Rank;
 import sk_microservices.UserService.forms.*;
 import sk_microservices.UserService.entities.User;
 import sk_microservices.UserService.security.JWTAuthenticationFilter;
@@ -35,6 +39,32 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/getRank/{id}")
+    public ResponseEntity<Object> getRank(@PathVariable long id) {
+        try {
+            Rank rank = userService.getMiles(id);
+            return new ResponseEntity<>(rank, HttpStatus.ACCEPTED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/updateMiles/{id}/{miles}")
+    public ResponseEntity<Object> updateMiles(@PathVariable long id, @PathVariable int miles) {
+        try {
+            System.out.println(miles);
+            User user = userService.findById(id);
+            user.setBrojMilja(user.getBrojMilja() + miles);
+            userService.updateRunk(user);
+            userService.saveAndFlush(user);
+            return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/editProfile")
     public ResponseEntity<String> editProfil(HttpServletRequest req, @RequestBody UserProfilEditForm userProfilEditForm) {
         try {
@@ -46,6 +76,7 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
 
     @PostMapping("/addCreditCard")
     public ResponseEntity<Object> addCreditCard(HttpServletRequest req, @RequestBody AddCreditCardForm addCreditCardForm) {
@@ -76,7 +107,7 @@ public class UserController {
     }
 
     @GetMapping("/getUser")
-    public ResponseEntity<Object> getUser(@RequestHeader(value = HEADER_STRING) String token){
+    public ResponseEntity<Object> getUser(@RequestHeader(value = HEADER_STRING) String token) {
         try {
             User user = userService.getAuthentication(token);
             UserProfilEditForm toReturn = new UserProfilEditForm(user.getIme(), user.getPrezime(), user.getEmail(), user.getBrojPasosa(), new ArrayList<AddCreditCardForm>());
@@ -86,25 +117,25 @@ public class UserController {
                 toReturn.getCards().add(creditCardForm);
             }
             return new ResponseEntity<>(toReturn, HttpStatus.ACCEPTED);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/getUserId")
-    public ResponseEntity<Long> getUserId(@RequestHeader(value = HEADER_STRING) String token){
+    public ResponseEntity<Long> getUserId(@RequestHeader(value = HEADER_STRING) String token) {
         try {
             User user = userService.getAuthentication(token);
             return new ResponseEntity<Long>(user.getId(), HttpStatus.ACCEPTED);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/getCreditCards")
-    public ResponseEntity<List<AddCreditCardForm>> getCreditCards(@RequestHeader(value = HEADER_STRING) String token){
+    public ResponseEntity<List<AddCreditCardForm>> getCreditCards(@RequestHeader(value = HEADER_STRING) String token) {
         try {
             User user = userService.getAuthentication(token);
             List<AddCreditCardForm> toReturn = new ArrayList<>();
@@ -114,7 +145,7 @@ public class UserController {
                 toReturn.add(creditCardForm);
             }
             return new ResponseEntity<List<AddCreditCardForm>>(toReturn, HttpStatus.ACCEPTED);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
