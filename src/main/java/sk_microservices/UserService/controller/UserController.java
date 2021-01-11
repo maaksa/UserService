@@ -43,7 +43,7 @@ public class UserController {
     public ResponseEntity<Object> getRank(@PathVariable long id) {
         try {
             Rank rank = userService.getMiles(id);
-            return new ResponseEntity<>(rank.toString(), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(rank, HttpStatus.ACCEPTED);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
