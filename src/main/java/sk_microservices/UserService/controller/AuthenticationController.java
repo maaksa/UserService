@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import sk_microservices.UserService.entities.User;
+import sk_microservices.UserService.entities.enums.Role;
 import sk_microservices.UserService.entities.enums.EmailMessage;
 import sk_microservices.UserService.forms.Login_Form;
 import sk_microservices.UserService.forms.RegistrationForm;
@@ -71,6 +72,7 @@ public class AuthenticationController {
         try {
             User user = new User(registrationForm.getIme(), registrationForm.getPrezime(), registrationForm.getEmail(),
                     encoder.encode(registrationForm.getPassword()), registrationForm.getBrojPasosa());
+            user.setRole(Role.USER);
             user = userService.saveAndFlush(user);
 
             //send email

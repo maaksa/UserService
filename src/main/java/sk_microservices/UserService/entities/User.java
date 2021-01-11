@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import sk_microservices.UserService.entities.enums.Rank;
+import sk_microservices.UserService.entities.enums.Role;
 
 import javax.persistence.*;
 import java.util.List;
@@ -27,6 +28,9 @@ public class User {
     private String email;
 
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     private long brojPasosa;
 

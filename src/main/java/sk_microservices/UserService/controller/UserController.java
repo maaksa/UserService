@@ -110,7 +110,7 @@ public class UserController {
     public ResponseEntity<Object> getUser(@RequestHeader(value = HEADER_STRING) String token) {
         try {
             User user = userService.getAuthentication(token);
-            UserProfilEditForm toReturn = new UserProfilEditForm(user.getIme(), user.getPrezime(), user.getEmail(), user.getBrojPasosa(), new ArrayList<AddCreditCardForm>());
+            UserProfilEditForm toReturn = new UserProfilEditForm(user.getIme(), user.getPrezime(), user.getEmail(), user.getBrojPasosa(), user.getRole().toString(), new ArrayList<AddCreditCardForm>());
             for (CreditCard creditCard : user.getCreditCards()) {
                 AddCreditCardForm creditCardForm = new AddCreditCardForm(creditCard.getIme(), creditCard.getPrezime(),
                         creditCard.getBroj(), creditCard.getPin());

@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 import sk_microservices.UserService.entities.CreditCard;
 import sk_microservices.UserService.entities.User;
+import sk_microservices.UserService.entities.enums.Role;
 import sk_microservices.UserService.entities.enums.EmailMessage;
 import sk_microservices.UserService.entities.enums.Rank;
 import sk_microservices.UserService.forms.AddCreditCardForm;
@@ -48,6 +49,19 @@ public class UserService {
 
         return true;
     }
+
+    public Boolean checkAdmin(String token) {
+        String email = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
+                .verify(token.replace(TOKEN_PREFIX, "")).getSubject();
+
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            return false;
+        }
+        return user.getRole().equals(Role.ADMIN);
+    }
+
 
     public void updateRunk(User user){
         int userMiles = user.getBrojMilja();
@@ -115,7 +129,7 @@ public class UserService {
             user.setEmail(userProfilEditForm.getEmail());
 
             //send email
-            //otificationService.sendMail(user.getEmail(), EmailMessage.EDIT);
+            //notificationService.sendMail(user.getEmail(), EmailMessage.EDIT);
 
             return userRepository.save(user);
         } else {

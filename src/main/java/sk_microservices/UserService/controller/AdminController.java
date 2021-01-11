@@ -7,6 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import sk_microservices.UserService.repository.UserRepository;
 import sk_microservices.UserService.service.AdminService;
+import sk_microservices.UserService.service.UserService;
 
 import static sk_microservices.UserService.security.SecurityConstants.HEADER_STRING;
 
@@ -15,20 +16,18 @@ import static sk_microservices.UserService.security.SecurityConstants.HEADER_STR
 public class AdminController {
 
     private BCryptPasswordEncoder encoder;
-    private UserRepository userRepo;
-    private AdminService adminService;
+    private UserService userService;
 
     @Autowired
-    public AdminController(BCryptPasswordEncoder encoder, UserRepository userRepo, AdminService adminService) {
+    public AdminController(BCryptPasswordEncoder encoder, UserService userService) {
         this.encoder = encoder;
-        this.userRepo = userRepo;
-        this.adminService = adminService;
+        this.userService = userService;
     }
 
     @GetMapping("/checkAdmin")
-    public ResponseEntity<Object> getAllFlights(@RequestHeader(value = HEADER_STRING) String token) {
+    public ResponseEntity<Object> checkAdmin(@RequestHeader(value = HEADER_STRING) String token) {
         try {
-            Boolean toReturn = adminService.check(token);
+            Boolean toReturn = userService.checkAdmin(token);
             return new ResponseEntity<>(toReturn, HttpStatus.ACCEPTED);
         } catch (Exception e) {
             e.printStackTrace();

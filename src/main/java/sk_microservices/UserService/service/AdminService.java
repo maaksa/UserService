@@ -24,7 +24,7 @@ public class AdminService {
         System.out.println(username);
 
         //todo generisanje tokena i za admin u securty
-        Admin admin = adminRepository.findByUsername("maxa");
+        Admin admin = adminRepository.findByUsername(username);
 
         if (admin == null) {
             return null;
