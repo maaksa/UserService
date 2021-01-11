@@ -37,6 +37,9 @@ public class Consumer {
             User user = userService.findById(user_id);
 
 
+            if(user == null){
+                return;
+            }
             //send email
             //notificationService.sendMail(user.getEmail(), EmailMessage.REFUNDS);
             user.setBrojMilja(user.getBrojMilja() - miles);
