@@ -62,11 +62,6 @@ public class AuthenticationController {
     }
 
 
-    @GetMapping("/login")
-    public String login() {
-        return "user/login-test";
-    }
-
     @PostMapping("/register")
     public ResponseEntity<?> registerUserAccount(@RequestBody RegistrationForm registrationForm) {
         try {

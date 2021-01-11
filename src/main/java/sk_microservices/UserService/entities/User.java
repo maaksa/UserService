@@ -32,15 +32,15 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private Rank runk;
+
     private long brojPasosa;
 
     private int brojMilja;
 
     @OneToMany(mappedBy = "user")
     private List<CreditCard> creditCards;
-
-    @Enumerated(EnumType.STRING)
-    private Rank rank;
 
     public User(String ime, String prezime, String email, String password, long brojPasosa) {
         this.ime = ime;

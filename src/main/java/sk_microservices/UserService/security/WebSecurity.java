@@ -50,7 +50,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
         */
         http.csrf().disable().authorizeRequests()
-                .antMatchers(REGISTRATION_PATH, LOGIN_PATH, SIGNIN_PATH, "/login", "/user/checkUser").permitAll()
+                .antMatchers(REGISTRATION_PATH, LOGIN_PATH, SIGNIN_PATH, "/login").permitAll()
                 .anyRequest().permitAll()
                 .and()
                 .logout().deleteCookies(HEADER_STRING).invalidateHttpSession(true).clearAuthentication(true)

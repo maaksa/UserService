@@ -28,20 +28,21 @@ public class Consumer {
         try {
             ObjectMapper mapper = new ObjectMapper();
             Map<String,Object> map = mapper.readValue(ticket, Map.class);
-            Long user_id = Long.valueOf((Integer)map.get("user_id"));
-            Long flight_id = Long.valueOf((Integer)map.get("flight_id"));
-            User user = userService.findById(user_id);
-            //todo http://localhost:8762/rest-flight-service?
-            ResponseEntity<Object> response = UtilsMethods.sendGet("http://localhost:8081/flight/miles/" + flight_id);
-            if (response.getBody() == null) {
+            Integer id = (Integer)map.get("user_id");
+            if(id == null){
                 return;
             }
+            Long user_id = Long.valueOf(id);
+            Integer miles = (Integer)(map.get("miles"));
+            User user = userService.findById(user_id);
+            //todo http://localhost:8762/rest-flight-service?
+
 
             //send email
             //notificationService.sendMail(user.getEmail(), EmailMessage.REFUNDS);
-
-            int miles = (int) response.getBody();
+            System.out.println(user.getBrojMilja());
             user.setBrojMilja(user.getBrojMilja() - miles);
+            System.out.println(user.getBrojMilja());
 
             userService.updateRunk(user);
 

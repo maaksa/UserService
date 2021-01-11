@@ -66,13 +66,13 @@ public class UserService {
     public void updateRunk(User user){
         int userMiles = user.getBrojMilja();
         if(userMiles > 10000){
-            user.setRank(Rank.ZLATO);
+            user.setRunk(Rank.ZLATO);
         }
         else if(userMiles > 1000){
-            user.setRank(Rank.SREBRO);
+            user.setRunk(Rank.SREBRO);
         }
         else
-            user.setRank(Rank.BRONZA);
+            user.setRunk(Rank.BRONZA);
     }
 
     public Rank getMiles(long id){

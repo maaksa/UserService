@@ -43,22 +43,22 @@ public class UserController {
     public ResponseEntity<Object> getRank(@PathVariable long id) {
         try {
             Rank rank = userService.getMiles(id);
-            return new ResponseEntity<>(rank, HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(rank.toString(), HttpStatus.ACCEPTED);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping("/updateMiles/{id}/{miles}")
-    public ResponseEntity<Object> updateMiles(@PathVariable long id, @PathVariable int miles) {
+    @PostMapping("/updateMiles/{id}/{miles}")
+    public ResponseEntity<String> updateMiles(@PathVariable long id, @PathVariable int miles) {
         try {
             System.out.println(miles);
             User user = userService.findById(id);
             user.setBrojMilja(user.getBrojMilja() + miles);
             userService.updateRunk(user);
             userService.saveAndFlush(user);
-            return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Uspesno promenjen", HttpStatus.ACCEPTED);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
