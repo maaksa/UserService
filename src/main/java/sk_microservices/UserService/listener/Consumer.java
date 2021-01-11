@@ -35,14 +35,11 @@ public class Consumer {
             Long user_id = Long.valueOf(id);
             Integer miles = (Integer)(map.get("miles"));
             User user = userService.findById(user_id);
-            //todo http://localhost:8762/rest-flight-service?
 
 
             //send email
             //notificationService.sendMail(user.getEmail(), EmailMessage.REFUNDS);
-            System.out.println(user.getBrojMilja());
             user.setBrojMilja(user.getBrojMilja() - miles);
-            System.out.println(user.getBrojMilja());
 
             userService.updateRunk(user);
 

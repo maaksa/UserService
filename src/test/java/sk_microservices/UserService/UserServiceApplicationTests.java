@@ -5,10 +5,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import sk_microservices.UserService.entities.Admin;
 import sk_microservices.UserService.entities.User;
 import sk_microservices.UserService.entities.enums.Role;
-import sk_microservices.UserService.repository.UserRepository;
 import sk_microservices.UserService.service.UserService;
 
 @RunWith(SpringRunner.class)

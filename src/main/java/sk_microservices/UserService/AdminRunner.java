@@ -18,16 +18,19 @@ public class AdminRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        User user1 = new User();
-        user1.setRole(Role.ADMIN);
-        user1.setEmail("boris");
-        user1.setPassword(encoder.encode("12345678"));
-        userService.saveUser(user1);
 
-        User user2 = new User();
-        user2.setRole(Role.ADMIN);
-        user2.setEmail("maxa");
-        user2.setPassword(encoder.encode("12345678"));
-        userService.saveUser(user2);
+        if(userService.findAll().isEmpty()) {
+            User user1 = new User();
+            user1.setRole(Role.ADMIN);
+            user1.setEmail("boris");
+            user1.setPassword(encoder.encode("12345678"));
+            userService.saveUser(user1);
+
+            User user2 = new User();
+            user2.setRole(Role.ADMIN);
+            user2.setEmail("maxa");
+            user2.setPassword(encoder.encode("12345678"));
+            userService.saveUser(user2);
+        }
     }
 }
