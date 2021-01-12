@@ -41,7 +41,8 @@ public class Consumer {
                 return;
             }
             //send email
-            //notificationService.sendMail(user.getEmail(), EmailMessage.REFUNDS);
+            notificationService.sendMail(user.getEmail(), EmailMessage.REFUNDS);
+
             user.setBrojMilja(user.getBrojMilja() - miles);
 
             userService.updateRunk(user);

@@ -71,7 +71,7 @@ public class AuthenticationController {
             user = userService.saveAndFlush(user);
 
             //send email
-            //notificationService.sendMail(user.getEmail(), EmailMessage.REGISTER);
+            notificationService.sendMail(user.getEmail(), EmailMessage.REGISTER);
 
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }catch (Exception e){

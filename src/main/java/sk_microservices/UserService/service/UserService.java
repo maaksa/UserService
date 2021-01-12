@@ -129,7 +129,7 @@ public class UserService {
             user.setEmail(userProfilEditForm.getEmail());
 
             //send email
-            //notificationService.sendMail(user.getEmail(), EmailMessage.EDIT);
+            notificationService.sendMail(user.getEmail(), EmailMessage.EDIT);
 
             return userRepository.save(user);
         } else {
